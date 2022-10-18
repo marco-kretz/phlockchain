@@ -2,19 +2,43 @@
 
 namespace Phlockchain;
 
-use Exception;
 use RuntimeException;
 
+/**
+ * Represents the actual Blockchain.
+ *
+ * @author Marco Kretz <mk@marco-kretz.de>
+ */
 class Blockchain
 {
+    /**
+     * The starting string needed for a hash to be seen as signed/valid.
+     *
+     * @var string
+     */
     public const SIGNED_PREFIX = '0000';
-    public const NO_PREV_BLOCK_HASH = '0';
+
+    /**
+     * The hash returned for the previous block if no previous block exists.
+     *
+     * @var string
+     */
+    public const NO_PREV_BLOCK_HASH = '0000000000000000000000000000000000000000000000000000000000000000';
 
     /**
      * @var Block[]
      */
     private array $blocks;
 
+    /**
+     * Add one or more blocks to the blockchain.
+     *
+     * @param Block ...$blocks
+     *
+     * @return $this
+     *
+     * @throws RuntimeException Thrown, if the previous block is not signed/valid.
+     */
     public function add(Block ...$blocks): self
     {
         foreach ($blocks as $block) {
@@ -35,16 +59,33 @@ class Blockchain
         return $this;
     }
 
+    /**
+     * Return a specific block.
+     *
+     * @param int $id
+     *
+     * @return Block|null
+     */
     public function get(int $id): ?Block
     {
         return $this->blocks[$id] ?? null;
     }
 
+    /**
+     * Check if the chain is empty.
+     *
+     * @return bool
+     */
     public function isEmpty(): bool
     {
         return empty($this->blocks);
     }
 
+    /**
+     * Check if all block and therefore the whole chain is signed/valid.
+     *
+     * @return bool
+     */
     public function isCompletelySigned(): bool
     {
         foreach ($this->blocks as $block) {
@@ -56,6 +97,15 @@ class Blockchain
         return true;
     }
 
+    /**
+     * Start mining the given block for it to be signed.
+     *
+     * @param Block $block
+     *
+     * @return Block
+     *
+     * @throws RuntimeException Throws, if the block could not be signed.
+     */
     public function mine(Block $block): Block
     {
         if ($block->isSigned()) {
@@ -74,6 +124,13 @@ class Blockchain
         return $block;
     }
 
+    /**
+     * Check if a block would theoretically be signed/valid when added to the chain.
+     *
+     * @param Block $block
+     *
+     * @return bool
+     */
     public function validateBlock(Block $block): bool
     {
         if (!empty($this->blocks)) {
@@ -83,6 +140,11 @@ class Blockchain
         return $block->isSigned();
     }
 
+    /**
+     * Deep clone a blockchain.
+     *
+     * @return void
+     */
     public function __clone()
     {
         $newBlocks = [];

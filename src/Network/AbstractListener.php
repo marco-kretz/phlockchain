@@ -2,17 +2,42 @@
 
 namespace Phlockchain\Network;
 
+/**
+ * Adds event capabilities.
+ *
+ * @author Marco Kretz <mk@marco-kretz.de>
+ */
 abstract class AbstractListener
 {
     /**
-     * @var string 24 characters long client address.
+     * Client address.
+     *
+     * @var string
      */
     protected string $address;
 
+    /**
+     * List of known clients in the network.
+     *
+     * @var array
+     */
     protected array $clientNodes = [];
 
+    /**
+     * Registered events listeners.
+     *
+     * @var array
+     */
     private array $eventListeners = [];
 
+    /**
+     * Attach a callback to an event.
+     *
+     * @param string $event
+     * @param callable $callback
+     *
+     * @return void
+     */
     public function on(string $event, callable $callback): void
     {
         $event = strtolower(trim($event));
@@ -23,6 +48,14 @@ abstract class AbstractListener
         $this->eventListeners[$event][] = $callback;
     }
 
+    /**
+     * Trigger an event resulting in all attached callbacks to get called.
+     *
+     * @param string $event
+     * @param array|null $payload
+     *
+     * @return void
+     */
     public function trigger(string $event, ?array $payload = null): void
     {
         $event = strtolower(trim($event));
@@ -37,6 +70,17 @@ abstract class AbstractListener
         }
     }
 
+    /**
+     * Propagate an event to all other client in the network.
+     * Injects the current client as 'sender' into the payload.
+     *
+     * Yeye I know, insecure, but it's just for demonstration :)
+     *
+     * @param string $event
+     * @param array|null $payload
+     *
+     * @return void
+     */
     public function propagate(string $event,? array $payload = null): void
     {
         $event = strtolower(trim($event));
