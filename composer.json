@@ -1,0 +1,20 @@
+{
+    "name": "marco-kretz/phlockchain",
+    "description": "Example blockhain approach in PHP for learning purposes",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Phlockchain\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Marco Kretz",
+            "email": "mk@marco-kretz.de"
+        }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "symfony/console": "^6.1"
+    }
+}
